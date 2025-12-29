@@ -26,6 +26,7 @@ npm-debug.*
 yarn-debug.*
 yarn-error.*
 
+
 # macOS
 .DS_Store
 *.pem
@@ -35,7 +36,16 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+expo-env.d.ts
 
 # generated native folders
 /ios
 /android
+
+
+# Ne jamais pousser vos clés API ou secrets dans Git
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
