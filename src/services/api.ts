@@ -1,66 +1,72 @@
-import axios from 'axios'; // utile pour les requete http vers l'api
-import AsyncStorage from '@react-native-async-storage/async-storage' // stocker le jwt sur mon telephone
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Configuration de base
 const api = axios.create({
-    baseURL: 'http://localhost:5000',
-    timeout: 10000,
-    headers: {
-        'Content-Type': 'application/json'
-    }
+  baseURL: 'http://localhost:5000',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-
-// Sauvegarde local des tokens
-api.interceptors.request.use( async (config) => {
-    const token =  await AsyncStorage.getItem('access_token');
-    if(token){
-        config.headers.Authorization = `Bearer ${token}`
+// Intercepteur requête : Ajouter token automatiquement
+api.interceptors.request.use(
+  async (config) => {
+    const token = await AsyncStorage.getItem('access_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
-})
-
-// intercepteur de reponse lorsque le token expire afin de le rafraichir
-api.interceptors.response.use(
-    (response) =>response, 
-    async(error) =>{ // traitement en cas d'erreur
-        const requeteOriginal = error.config // configuration de la requete qui a echoue
-
-        if(error.response?.status === 401 && !requeteOriginal._retry){
-            requeteOriginal._retry = true
-
-            // rafraichir
-            const refreshToken = await AsyncStorage.getItem('refresh_token')
-            if(refreshToken){
-                try{
-                    const response = await api.post('/api/auth/rafraichir', {}, {
-                        headers: { Authorization: `Bearer ${refreshToken}` }
-                    });
-                    const { access_token }= response.data
-
-                    // sauvegarde du nouveau token
-                    await AsyncStorage.setItem('access_token', access_token)
-
-                    // retente la requete qui avait crasher avec lle token expire
-                    requeteOriginal.headers.Authorization = `Bearer ${access_token}`
-                    return api(requeteOriginal)
-                } catch {
-  
-                await AsyncStorage.multiRemove(['access_token', 'refresh_token']);
-            }
-        }
-    }
-    
+  },
+  (error) => {
     return Promise.reject(error);
-});
+  }
+);
 
-// Api pour authentification
-export const authAPI = {
+// Intercepteur réponse : Gérer refresh token
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const requeteOriginal = error.config;
 
-    //Connexion
-    login: async (email: string, password: string) => {
-        const response = await api.post('/api/auth/connexion', {email, password})
-        return response.data
+    // Erreur 401 (token expiré)
+    if (error.response?.status === 401 && !requeteOriginal._retry) {
+      requeteOriginal._retry = true;
+
+      try {
+        const refreshToken = await AsyncStorage.getItem('refresh_token');
+
+        if (!refreshToken) {
+          await AsyncStorage.multiRemove(['access_token', 'refresh_token', 'user']);
+          return Promise.reject(error);
+        }
+
+        // Rafraîchir le token
+        const response = await axios.post(
+          'http://localhost:5000/auth/rafraichir',
+          {},
+          { headers: { Authorization: `Bearer ${refreshToken}` } }
+        );
+
+        const { access_token } = response.data;
+
+        // Sauvegarder nouveau token
+        await AsyncStorage.setItem('access_token', access_token);
+
+        // Réessayer requête originale
+        requeteOriginal.headers.Authorization = `Bearer ${access_token}`;
+        return api(requeteOriginal);
+
+      } catch (refreshError) {
+        await AsyncStorage.multiRemove(['access_token', 'refresh_token', 'user']);
+        return Promise.reject(refreshError);
+      }
     }
-}
+
+    // Autres erreurs
+    return Promise.reject(error);
+  }
+);
 
 export default api;
