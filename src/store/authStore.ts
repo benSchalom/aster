@@ -95,9 +95,13 @@ export const useAuthStore = create<AuthState>((set) => ({
         try {
             const token = await AsyncStorage.getItem('access_token');
             if (token) {
-            const data = await authService.utilisateur();
-            set({ user: data.user, pro: data.pro, isAuthenticated: true });
+                const data = await authService.utilisateur();
+                set({ user: data.user, pro: data.pro, isAuthenticated: true });
             }
+            
+            //delai d'attente pour afficher le splashscreen
+            await new Promise(resolve => setTimeout(resolve, 2000)); 
+
         } catch (error) {
             await AsyncStorage.multiRemove(['access_token', 'refresh_token']);
         } finally {

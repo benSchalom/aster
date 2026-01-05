@@ -1,17 +1,18 @@
-// 1. Imports
+// Bibliotheques
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { theme } from '../constants/theme';
 
-// 2. Import écrans
+// Ecrans
 import { SplashScreen } from '../screens/auth/SplashScreen';
-//import { LoginScreen } from '../screens/auth/LoginScreen';
-// ... autres écrans
+import { LoginScreen } from '../screens/auth/LoginScreen';
 
-// 3. Import store
+
+// store
 import { useAuthStore } from '../store/authStore';
 
-// 4. Types navigation
+// Types navigation:Les différents ecrans (avec leurs paramétres) impliquées dans cette stack
 export type AuthStackParamList = {
   Splash: undefined;
   Login: undefined;
@@ -21,10 +22,45 @@ export type AuthStackParamList = {
   ForgotPassword: undefined;
 };
 
-// 5. Create Stack
+// Create Stack
 const AuthStack = createStackNavigator<AuthStackParamList>();
 
-// 6. Composant principal
+// Composant principal
 export const AppNavigator = () => {
-  // Logique navigation
-}
+    const { initialize, isLoading, isAuthenticated } = useAuthStore();
+    // a l'aide dus tore je verifie si un token existe au demarrage 
+    useEffect(() => { /// Execution du code une seul fois grace  useEffect()
+        initialize();
+    }, []);
+
+    if (isLoading) { // pendant la verification
+        return <SplashScreen />;
+    }
+
+    return ( // apres verification
+        <NavigationContainer>
+            <AuthStack.Navigator
+                screenOptions={{
+                    headerStyle: {
+                        backgroundColor: theme.colors.primary,
+                    },
+                    headerTintColor: theme.colors.white,
+                    headerTitleStyle: {
+                        fontWeight: theme.typography.fontWeight.semibold,
+                    },
+                }}
+            >
+                {/* Ecran de connexion */}
+                <AuthStack.Screen 
+                    name="Login" 
+                    component={LoginScreen}
+                    options={{ 
+                        title: 'Connexion',
+                        headerBackTitle: 'Retour'
+                    }}
+                />
+
+            </AuthStack.Navigator>
+        </NavigationContainer>
+    );
+};

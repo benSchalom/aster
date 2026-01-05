@@ -1,6 +1,6 @@
 import React from 'react';
-import { SplashScreen } from './src/screens/auth/SplashScreen';
+import { AppNavigator } from './src/navigation/AppNavigator';
 
 export default function App() {
-  return <SplashScreen />;
+  return <AppNavigator />;
 }

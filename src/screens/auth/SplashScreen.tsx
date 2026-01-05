@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ImageBackground, StatusBar } from 'react-native';
+import { useNavigation } from '@react-navigation/native';  
+import { StackNavigationProp } from '@react-navigation/stack';  
+import { AuthStackParamList } from '../../navigation/AppNavigator';  
+import { useAuthStore } from '../../store/authStore';  
 import { Logo } from '../../components/Logo';
 
-export const SplashScreen = () => {
-  useEffect(() => {
-    // TODO: Vérifier token et naviguer (on fera ça plus tard)
-    // Pour l'instant juste affichage visuel
-  }, []);
+type SplashScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'Splash'>;
 
+export const SplashScreen = () => {
   return (
     <ImageBackground
       source={require('../../../assets/splash-bg.jpeg')}
