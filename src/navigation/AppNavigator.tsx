@@ -7,6 +7,10 @@ import { theme } from '../constants/theme';
 // Ecrans
 import { SplashScreen } from '../screens/auth/SplashScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
+import { RegisterClientScreen } from '../screens/auth/RegisterClientScreen'; 
+import { VerifyEmailScreen } from '../screens/auth/VerifyEmailScreen';
+import { RegisterProScreen } from '../screens/auth/RegisterProScreen';
+import { ChoiceScreen } from '../screens/auth/ChoiceScreen';
 
 
 // store
@@ -16,6 +20,7 @@ import { useAuthStore } from '../store/authStore';
 export type AuthStackParamList = {
   Splash: undefined;
   Login: undefined;
+  Choice: undefined;
   RegisterClient: undefined;
   RegisterPro: undefined;
   VerifyEmail: { userId: number; email: string };
@@ -59,6 +64,46 @@ export const AppNavigator = () => {
                         headerBackTitle: 'Retour'
                     }}
                 />
+
+                <AuthStack.Screen 
+                name="Choice" 
+                component={ChoiceScreen}
+                options={{ 
+                    title: 'Inscription',
+                    headerShown: false,  // Pas de header pour écran de choix
+                }}
+                />
+
+                {/* Ecran inscription client */}
+                <AuthStack.Screen 
+                    name="RegisterClient" 
+                    component={RegisterClientScreen}
+                    options={{ 
+                        title: 'Inscription',
+                        headerBackTitle: 'Retour',
+                    }}
+                />
+
+                {/* Ecran inscription pro */}
+                <AuthStack.Screen 
+                    name="RegisterPro" 
+                    component={RegisterProScreen}
+                    options={{ 
+                        title: 'Inscription Pro',
+                        headerBackTitle: 'Retour',
+                    }}
+                />
+
+                {/* verifier email */}
+                <AuthStack.Screen 
+                    name="VerifyEmail" 
+                    component={VerifyEmailScreen}
+                    options={{ 
+                        title: 'Vérification',
+                        headerBackTitle: 'Retour',
+                    }}
+                />
+
 
             </AuthStack.Navigator>
         </NavigationContainer>

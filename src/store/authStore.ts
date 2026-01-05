@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { authService } from '../services/authService'
 import { User, Pro} from '../types/models'
-import { RegisterClientData, RegisterProData } from '../types/auth.types'
+import { RegisterClientData, RegisterProData, RegisterResponse } from '../types/auth.types'
 
 // interface du store
 interface AuthState {
@@ -13,8 +13,8 @@ interface AuthState {
 
     connexion: (email: string, password: string) => Promise<void>;
     deconnexion: () => Promise<void>;
-    inscriptionClient: (data: RegisterClientData) => Promise<void>;
-    inscriptionPro: (data: RegisterProData) => Promise<void>;
+    inscriptionClient: (data: RegisterClientData) => Promise<RegisterResponse>;
+    inscriptionPro: (data: RegisterProData) => Promise<RegisterResponse>;
     verifierEmail: (userId: number, code: string) => Promise<void>;
     initialize: () => Promise<void>;
 }
@@ -55,19 +55,17 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
 
     inscriptionClient: async (data) => {
-        set ({isLoading: true})
-
-        await authService.inscrireClient(data)
-
-        set({isLoading: false})
+        //set ({isLoading: true})
+        const response = await authService.inscrireClient(data)
+        //set({isLoading: false})
+        return response
     },
 
     inscriptionPro: async (data) => {
-        set({isLoading: true})
-
-        await authService.inscrirePro(data)
-
-        set({isLoading: false})
+        //set({isLoading: true})
+        const response = await authService.inscrirePro(data)
+        //set({isLoading: false})
+        return response
     },
 
     verifierEmail: async (userId, code) => {

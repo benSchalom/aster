@@ -78,7 +78,7 @@ export const authService ={
     // ==========================================
 
     // Liste des spécialités
-    Specialites: async (): Promise<SpecialitesResponse> => {
+    specialites: async (): Promise<SpecialitesResponse> => {
         const response = await api.get('/auth/specialites');
         return response.data;
     },

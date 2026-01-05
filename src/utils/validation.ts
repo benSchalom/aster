@@ -76,3 +76,14 @@ export const validateRequired = (value: string, fieldName: string): { valid: boo
   }
   return { valid: true };
 };
+
+// valider le match du mot de passe et la confirmation
+export const validatePasswordMatch = (
+  password: string, 
+  confirmPassword: string
+): { valid: boolean; error?: string } => {
+  if (password !== confirmPassword) {
+    return { valid: false, error: 'Les mots de passe ne correspondent pas' };
+  }
+  return { valid: true };
+};

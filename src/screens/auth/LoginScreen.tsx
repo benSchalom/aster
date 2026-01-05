@@ -133,7 +133,7 @@ export const LoginScreen = () => {
 
                 <View style={styles.registerContainer}>
                     <Text style={styles.registerText}>Pas de compte ? </Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('RegisterClient')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Choice')}>
                     <Text style={styles.registerLink}>S'inscrire</Text>
                     </TouchableOpacity>
                 </View>
